@@ -82,7 +82,12 @@ def main():
         help='Disable converting positional only arguments to normal arguments',
         dest='convert_posargs_to_args',
     )
-
+    parser.add_argument(
+        '--preserve-shebang',
+        action='store_true',
+        help='Preserve any shebang line from the source',
+        dest='preserve_shebang',
+    )
     parser.add_argument('-v', '--version', action='version', version=version)
 
     args = parser.parse_args()
@@ -120,6 +125,7 @@ def main():
             preserve_globals=preserve_globals,
             remove_object_base=args.remove_object_base,
             convert_posargs_to_args=args.convert_posargs_to_args,
+            preserve_shebang=args.preserve_shebang
         )
     )
 

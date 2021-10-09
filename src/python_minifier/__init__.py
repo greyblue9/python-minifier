@@ -5,6 +5,7 @@ a 'minified' representation of the same source code.
 """
 
 import ast
+import re
 
 from python_minifier.ast_compare import CompareError, compare_ast
 from python_minifier.module_printer import ModulePrinter
@@ -58,6 +59,7 @@ def minify(
     preserve_globals=None,
     remove_object_base=True,
     convert_posargs_to_args=True,
+    preserve_shebang=False,
 ):
     """
     Minify a python module
@@ -129,7 +131,19 @@ def minify(
     if convert_posargs_to_args:
         module = remove_posargs(module)
 
-    return unparse(module)
+    unparsed = unparse(module)
+
+    if preserve_shebang is True:
+        if isinstance(source, bytes):
+            shebang = re.match(br'^#!.*', source)
+            if shebang:
+                return shebang.group().decode() + '\n' + unparsed
+        else:
+            shebang = re.match(r'^#!.*', source)
+            if shebang:
+                return shebang.group() + '\n' + unparsed
+
+    return unparsed
 
 
 def unparse(module):
